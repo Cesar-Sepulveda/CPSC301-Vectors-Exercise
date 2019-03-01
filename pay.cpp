@@ -19,57 +19,65 @@ void readData(vector<Person> &vec,string fileName){
   int i = 0;
   string space;
 
-  while(i <= 16){
+  while(myFile){
+    Person emp;
+    vec.push_back(emp);
     myFile >> fName >> lName;
-    //vec[i].setFirstName(fName);
-    //vec[i].setLastName(lName);
+    vec.at(i).setFirstName(fName);
+    vec.at(i).setLastName(lName);
     myFile >> IDNum;
-    //vec[i].setEmployeeId(IDNum);
+    vec.at(i).setEmployeeId(IDNum);
     myFile >> cName;
-    //vec[i].setCompanyName(cName);
+    vec.at(i).setCompanyName(cName);
     myFile >> pay >> hours;
-    //vec[i].setPayRate(pay);
-    //vec[i].setHoursWorked(hours);
+    vec.at(i).setPayRate(pay);
+    vec.at(i).setHoursWorked(hours);
     getline(myFile,space);
     ++i;
   }
+  vec.pop_back();
   myFile.close();
 }
 
 void getCompanies(vector<Person> &vec, vector<string> &co){
   for(int i = 0; i < vec.size(); ++i){
-    co[i] = vec[i].getCompanyName();
-  }
-  for(int j = 0; j < co.size(); ++j){
-    for(int k = 1; k < co.size(); ++k){
-      if(co[j] == co[k]){
-        co[k].erase();
-      }
-    }
+    co.push_back(vec.at(i).getCompanyName());
   }
 }
 
 void printHighestPaid(vector<Person> &vec){
   int find = 0;
   for(int i = 0; i < vec.size(); ++i){
-    if(vec[find].totalPay() < vec[i].totalPay()){
+    if(vec.at(find).totalPay() < vec.at(i).totalPay()){
       find = i;
     }
   }
-  cout << "Highest paid: " << vec[find].getFirstName() << endl;
-  cout << "Employee ID: " << vec[find].getEmployeeId() << endl;
-  cout << "Employer: " << vec[find].getCompanyName() << endl;
+  cout << "Highest paid: " << vec.at(find).fullName() << endl;
+  cout << "Employee ID: " << vec.at(find).getEmployeeId() << endl;
+  cout << "Employer: " << vec.at(find).getCompanyName() << endl;
   cout << fixed << showpoint << setprecision(2);
-  cout << "Total pay: $" << vec[find].totalPay() << endl;
+  cout << "Total pay: $" << vec.at(find).totalPay() << endl;
 }
 
 void separateAndSave(vector<Person> vec, vector<string> co){
+  fstream myFile;
   for(int i = 0; i < co.size(); ++i){
-    fstream myFile;
-    myFile.open(co[i]+".txt");
+    myFile.open(co.at(i)+".txt");
+    cout << co.at(i)+".txt" << endl;
+    cout << "_______________________________________________________" << endl;
     for(int j = 0; j < vec.size(); ++j){
-      if(vec[j].getCompanyName() == co[i]){
-
+      float total = 0;
+      if(vec.at(j).getCompanyName() == co[i]){
+        total += vec.at(j).totalPay();
+        cout << fixed << showpoint << setprecision(2);
+        cout << setw(10) << vec.at(j).getFirstName();
+        cout << setw(10) << vec.at(j).getLastName();
+        cout << setw(5) << vec.at(j).getEmployeeId();
+        cout << setw(10) << vec.at(j).getCompanyName();
+        cout << setw(3) << "$" << vec.at(j).totalPay() << endl;
+        if(j+1 == vec.size()){
+          cout << "Total" << setw(3) << "$" << total<<endl;
+        }
       }
     }
     myFile.close();
@@ -79,17 +87,13 @@ void separateAndSave(vector<Person> vec, vector<string> co){
 
 int main(){
   vector<Person> employees;
-  vector<string> compantNames;
+  vector<string> companyNames;
   string fileName = "input.txt";
-cout << "ok" << endl;
   readData(employees, fileName);
-cout << "ok" << endl;
-  for(int i =0; i < employees.size(); ++i){
-    cout << employees[i].getFirstName() << endl;
-  }
-
   printHighestPaid(employees);
-
+  getCompanies(employees, companyNames);
+  separateAndSave(employees, companyNames);
 
   return 0;
 }
+
