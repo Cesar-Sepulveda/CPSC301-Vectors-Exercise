@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iomanip>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -43,6 +44,9 @@ void getCompanies(vector<Person> &vec, vector<string> &co){
   for(int i = 0; i < vec.size(); ++i){
     co.push_back(vec.at(i).getCompanyName());
   }
+  sort( co.begin(), co.end());
+  auto duplicates = unique( co.begin(), co.end());
+  co.erase(duplicates, co.end());
 }
 
 void printHighestPaid(vector<Person> &vec){
@@ -63,21 +67,21 @@ void separateAndSave(vector<Person> vec, vector<string> co){
   fstream myFile;
   for(int i = 0; i < co.size(); ++i){
     myFile.open(co.at(i)+".txt");
-    cout << co.at(i)+".txt" << endl;
-    cout << "_______________________________________________________" << endl;
+    myFile << co.at(i)+".txt" << endl;
+    myFile << "_______________________________________________________" << endl;
+    float total = 0;
     for(int j = 0; j < vec.size(); ++j){
-      float total = 0;
       if(vec.at(j).getCompanyName() == co[i]){
         total += vec.at(j).totalPay();
-        cout << fixed << showpoint << setprecision(2);
-        cout << setw(10) << vec.at(j).getFirstName();
-        cout << setw(10) << vec.at(j).getLastName();
-        cout << setw(5) << vec.at(j).getEmployeeId();
-        cout << setw(10) << vec.at(j).getCompanyName();
-        cout << setw(3) << "$" << vec.at(j).totalPay() << endl;
-        if(j+1 == vec.size()){
-          cout << "Total" << setw(3) << "$" << total<<endl;
+        myFile << fixed << showpoint << setprecision(2);
+        myFile << setw(10) << vec.at(j).getFirstName();
+        myFile << setw(10) << vec.at(j).getLastName();
+        myFile << setw(5) << vec.at(j).getEmployeeId();
+        myFile<< setw(10) << vec.at(j).getCompanyName();
+        myFile << setw(3) << "$" << vec.at(j).totalPay() << endl;
         }
+        if(j+1 == vec.size()){
+          myFile << "Total" << setw(3) << "$" << total<<endl;
       }
     }
     myFile.close();
